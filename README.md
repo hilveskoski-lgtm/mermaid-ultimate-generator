@@ -2,6 +2,17 @@
 
 > **Tavoite:** Kehittää ultimaattinen Mermaid-generaattori joka ymmärtää kaikki diagrammityypit, generoi validia syntaksia ja integroituu helposti työkaluihin.
 
+## 🎨 Mermaid Test (GitHub Render)
+
+```mermaid
+flowchart TD
+    A[Start] --> B{Decision}
+    B -->|Yes| C[Action 1]
+    B -->|No| D[Action 2]
+    C --> E[End]
+    D --> E
+```
+
 ## 🚀 Quick Start
 
 ```bash
