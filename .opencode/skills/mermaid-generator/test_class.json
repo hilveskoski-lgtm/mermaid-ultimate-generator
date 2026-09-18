@@ -1,0 +1,22 @@
+{
+  "type": "class",
+  "data": {
+    "classes": [
+      {
+        "name": "Animal",
+        "fields": {"name": "String", "age": "int"},
+        "methods": {"makeSound": "void"},
+        "visibility": {"name": "+", "age": "+", "makeSound": "+"}
+      },
+      {
+        "name": "Dog",
+        "fields": {"breed": "String"},
+        "methods": {"bark": "void"},
+        "visibility": {"breed": "+", "bark": "+"}
+      }
+    ],
+    "relationships": [
+      {"from": "Animal", "to": "Dog", "type": "inheritance"}
+    ]
+  }
+}

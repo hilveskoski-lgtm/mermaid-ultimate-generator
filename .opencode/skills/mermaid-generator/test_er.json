@@ -1,0 +1,12 @@
+{
+  "type": "er",
+  "data": {
+    "entities": [
+      {"name": "CUSTOMER", "attributes": {"id": "string PK", "name": "string", "email": "string"}},
+      {"name": "ORDER", "attributes": {"id": "int PK", "customer_id": "string FK", "total": "decimal"}}
+    ],
+    "relationships": [
+      {"from": "CUSTOMER", "to": "ORDER", "type": "one_to_many", "label": "places"}
+    ]
+  }
+}

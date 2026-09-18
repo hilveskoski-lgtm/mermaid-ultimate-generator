@@ -1,0 +1,84 @@
+# Mermaid Renderer Configuration
+
+# Default rendering settings
+defaults:
+  theme: "default"           # default, dark, forest, neutral, base
+  background: "transparent"  # transparent, white, #hex
+  format: "png"              # png, svg, pdf
+  scale: 1.0                 # 1.0 = normal, 2.0 = 2x, 0.5 = half
+  width: null                # null = auto, or pixel value
+  height: null               # null = auto, or pixel value
+
+# Backend preferences (first available used)
+backends:
+  - "mmdc"                   # @mermaid-js/mermaid-cli (fastest, headless)
+  - "playwright"             # Playwright (best quality, full browser)
+  - "puppeteer"              # Puppeteer (good quality, Chrome-based)
+
+# Backend-specific settings
+mmdc:
+  install_command: "npm install -g @mermaid-js/mermaid-cli"
+  binary: "mmdc"
+  timeout: 60
+
+playwright:
+  install_command: "pip install playwright && playwright install chromium"
+  browser: "chromium"
+  timeout: 60
+  wait_for_selector: ".mermaid"
+
+puppeteer:
+  install_command: "npm install -g puppeteer"
+  binary: "npx puppeteer"
+  timeout: 60
+
+# Batch rendering
+batch:
+  input_patterns:
+    - "*.mmd"
+    - "*.mermaid"
+    - "*.md"
+  exclude_patterns:
+    - "node_modules/**"
+    - ".git/**"
+    - "*.d.ts"
+  parallel: true
+  max_concurrent: 4
+
+# Kubernetes
+kubernetes:
+  job:
+    image: "node:20-alpine"
+    restart_policy: "OnFailure"
+    backoff_limit: 3
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+  cronjob:
+    schedule: "0 2 * * *"  # Daily at 2 AM
+    image: "node:20-alpine"
+    concurrency_policy: "Forbid"
+
+# Output
+output:
+  directory: "./renders"
+  naming: "{input_stem}.{format}"  # {input_stem}, {input_name}, {hash}
+  overwrite: true
+  create_dirs: true
+
+# Validation
+validation:
+  enabled: true
+  validator_path: "../mermaid-syntax-validator/validate.py"
+  fail_on_error: true
+  fail_on_warning: false
+
+# Watch mode (development)
+watch:
+  enabled: false
+  debounce_ms: 500
+  livereload_port: 35729

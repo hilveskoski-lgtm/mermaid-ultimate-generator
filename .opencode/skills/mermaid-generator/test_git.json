@@ -1,0 +1,15 @@
+{
+  "type": "git",
+  "data": {
+    "commands": [
+      {"type": "commit", "id": "Initial commit"},
+      {"type": "branch", "name": "develop"},
+      {"type": "checkout", "name": "develop"},
+      {"type": "commit", "id": "Add feature A"},
+      {"type": "commit", "id": "Add feature B"},
+      {"type": "checkout", "name": "main"},
+      {"type": "merge", "name": "develop", "id": "Merge develop"},
+      {"type": "tag", "name": "v1.0.0"}
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "type": "state",
+  "data": {
+    "version": "v2",
+    "states": ["[*] --> Idle", "Idle --> Processing: start()", "Processing --> Done: complete()", "Processing --> Error: fail()", "Done --> [*]", "Error --> [*]"]
+  }
+}

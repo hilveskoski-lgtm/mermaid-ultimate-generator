@@ -1,0 +1,49 @@
+# Mermaid Renderer - Kubernetes Job
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mermaid-renderer
+  labels:
+    app: mermaid-renderer
+spec:
+  template:
+    metadata:
+      labels:
+        app: mermaid-renderer
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: renderer
+        image: node:20-alpine
+        command:
+        - sh
+        - -c
+        - |
+          npm install -g @mermaid-js/mermaid-cli
+          mmdc -i /input/diagram.mmd -o /output/diagram.png -t dark -b transparent
+        volumeMounts:
+        - name: input
+          mountPath: /input
+        - name: output
+          mountPath: /output
+      volumes:
+      - name: input
+        configMap:
+          name: mermaid-input
+      - name: output
+        emptyDir: {}
+  backoffLimit: 3
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mermaid-input
+data:
+  diagram.mmd: |
+    flowchart TD
+        A[Start] --> B{Decision}
+        B -->|Yes| C[Action 1]
+        B -->|No| D[Action 2]
+        C --> E[End]
+        D --> E

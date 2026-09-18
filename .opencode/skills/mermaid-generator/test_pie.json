@@ -1,0 +1,12 @@
+{
+  "type": "pie",
+  "data": {
+    "title": "Market Share",
+    "slices": [
+      {"name": "Chrome", "value": 65},
+      {"name": "Safari", "value": 18},
+      {"name": "Edge", "value": 5},
+      {"name": "Firefox", "value": 3}
+    ]
+  }
+}

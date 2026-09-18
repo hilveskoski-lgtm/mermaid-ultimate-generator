@@ -1,0 +1,24 @@
+{
+  "type": "gantt",
+  "data": {
+    "title": "Project Timeline",
+    "dateFormat": "YYYY-MM-DD",
+    "axisFormat": "%m/%d",
+    "sections": [
+      {
+        "name": "Planning",
+        "tasks": [
+          {"name": "Requirements", "id": "a1", "start": "2024-01-01", "duration": "7d"},
+          {"name": "Design", "id": "a2", "deps": ["a1"], "duration": "5d"}
+        ]
+      },
+      {
+        "name": "Development",
+        "tasks": [
+          {"name": "Backend", "id": "b1", "deps": ["a2"], "duration": "14d"},
+          {"name": "Frontend", "id": "b2", "deps": ["a2"], "duration": "10d"}
+        ]
+      }
+    ]
+  }
+}

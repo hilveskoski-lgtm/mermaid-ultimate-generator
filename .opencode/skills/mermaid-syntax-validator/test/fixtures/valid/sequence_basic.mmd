@@ -1,0 +1,7 @@
+sequenceDiagram
+    participant Client
+    participant Server
+    Client->>Server: GET /api/resource
+    activate Server
+    Server-->>Client: 200 OK {data}
+    deactivate Server

@@ -1,0 +1,18 @@
+{
+  "type": "quadrant",
+  "data": {
+    "title": "Priority Matrix",
+    "x_axis": {"low": "Low Effort", "high": "High Effort"},
+    "y_axis": {"low": "Low Value", "high": "High Value"},
+    "quadrants": [
+      {"num": 1, "label": "Quick Wins"},
+      {"num": 2, "label": "Major Projects"},
+      {"num": 3, "label": "Fill-ins"},
+      {"num": 4, "label": "Time Sinks"}
+    ],
+    "points": [
+      {"name": "Task 1", "x": 0.2, "y": 0.8},
+      {"name": "Task 2", "x": 0.7, "y": 0.7}
+    ]
+  }
+}

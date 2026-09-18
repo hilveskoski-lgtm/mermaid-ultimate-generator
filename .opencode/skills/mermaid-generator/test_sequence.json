@@ -1,0 +1,16 @@
+{
+  "type": "sequence",
+  "data": {
+    "participants": [
+      {"id": "Client", "type": "participant"},
+      {"id": "API", "type": "participant"},
+      {"id": "DB", "type": "participant"}
+    ],
+    "messages": [
+      {"from": "Client", "to": "API", "message": "GET /resource", "type": "sync"},
+      {"from": "API", "to": "DB", "message": "SELECT * FROM resource", "type": "sync"},
+      {"from": "DB", "to": "API", "message": "Result", "type": "reply"},
+      {"from": "API", "to": "Client", "message": "200 OK", "type": "reply"}
+    ]
+  }
+}

@@ -1,0 +1,71 @@
+# Mermaid Renderer - Kubernetes CronJob for Batch Rendering
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mermaid-batch-renderer
+  labels:
+    app: mermaid-renderer
+spec:
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: mermaid-renderer
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: renderer
+            image: node:20-alpine
+            command:
+            - sh
+            - -c
+            - |
+              npm install -g @mermaid-js/mermaid-cli
+              cd /vault
+              find . -name "*.mmd" -o -name "*.mermaid" | while read file; do
+                out="/output/${file%.mmd}.png"
+                mkdir -p "$(dirname "$out")"
+                mmdc -i "$file" -o "$out" -t dark -b transparent
+                echo "Rendered: $file -> $out"
+              done
+            volumeMounts:
+            - name: vault
+              mountPath: /vault
+              readOnly: true
+            - name: output
+              mountPath: /output
+          volumes:
+          - name: vault
+            persistentVolumeClaim:
+              claimName: mermaid-vault-pvc
+          - name: output
+            persistentVolumeClaim:
+              claimName: mermaid-output-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mermaid-vault-pvc
+spec:
+  accessModes:
+    - ReadOnlyMany
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mermaid-output-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi

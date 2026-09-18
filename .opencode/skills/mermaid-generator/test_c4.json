@@ -1,0 +1,19 @@
+{
+  "type": "c4context",
+  "data": {
+    "title": "System Context",
+    "people": [
+      {"id": "user", "name": "User", "description": "Uses the system"}
+    ],
+    "systems": [
+      {"id": "system", "name": "My System", "description": "Does something useful"}
+    ],
+    "external_systems": [
+      {"id": "ext", "name": "External API", "description": "Provides data"}
+    ],
+    "relationships": [
+      {"from": "user", "to": "system", "label": "Uses", "technology": "HTTPS"},
+      {"from": "system", "to": "ext", "label": "Gets data from", "technology": "HTTPS/REST"}
+    ]
+  }
+}

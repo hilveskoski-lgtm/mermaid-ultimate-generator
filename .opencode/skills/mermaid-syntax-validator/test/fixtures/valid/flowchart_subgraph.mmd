@@ -1,0 +1,10 @@
+%%{init: {'theme': 'dark', 'flowchart': {'curve': 'linear'}}}%%
+flowchart LR
+    subgraph System
+        API[API Gateway]
+        DB[(Database)]
+    end
+    Client[Client] --> API
+    API --> DB
+    classDef internal fill:#bbf,stroke:#333;
+    class API,DB internal;

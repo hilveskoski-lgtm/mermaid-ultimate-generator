@@ -1,0 +1,18 @@
+{
+  "type": "kanban",
+  "data": {
+    "title": "Team Board",
+    "columns": [
+      {"name": "Backlog", "limit": 5},
+      {"name": "Ready", "limit": 3},
+      {"name": "In Progress", "limit": 3},
+      {"name": "Done", "limit": 10}
+    ],
+    "tasks": [
+      {"name": "Research", "column": "Backlog"},
+      {"name": "Design", "column": "Backlog"},
+      {"name": "Task 1", "column": "Ready"},
+      {"name": "Task 2", "column": "In Progress"}
+    ]
+  }
+}

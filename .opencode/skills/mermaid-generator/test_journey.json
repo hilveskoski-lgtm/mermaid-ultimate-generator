@@ -1,0 +1,22 @@
+{
+  "type": "journey",
+  "data": {
+    "title": "User Journey",
+    "sections": [
+      {
+        "name": "Discovery",
+        "tasks": [
+          {"name": "Visit Site", "score": 4, "actor": "User"},
+          {"name": "Browse", "score": 3, "actor": "User"}
+        ]
+      },
+      {
+        "name": "Purchase",
+        "tasks": [
+          {"name": "Add to Cart", "score": 5, "actor": "User"},
+          {"name": "Checkout", "score": 5, "actor": "User"}
+        ]
+      }
+    ]
+  }
+}

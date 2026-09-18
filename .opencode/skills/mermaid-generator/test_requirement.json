@@ -1,0 +1,21 @@
+{
+  "type": "requirement",
+  "data": {
+    "requirements": [
+      {
+        "id": "REQ-001",
+        "properties": {
+          "text": "The system shall allow users to authenticate",
+          "type": "functional",
+          "priority": "high"
+        }
+      }
+    ],
+    "elements": [
+      {"id": "AuthService", "type": "component"}
+    ],
+    "relationships": [
+      {"from": "AuthService", "to": "REQ-001", "type": "- satisfies"}
+    ]
+  }
+}

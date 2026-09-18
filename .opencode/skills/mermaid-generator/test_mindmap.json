@@ -1,0 +1,18 @@
+{
+  "type": "mindmap",
+  "data": {
+    "root": {
+      "name": "Project",
+      "children": [
+        {
+          "name": "Planning",
+          "children": [{"name": "Requirements"}, {"name": "Design"}]
+        },
+        {
+          "name": "Development",
+          "children": [{"name": "Backend"}, {"name": "Frontend"}]
+        }
+      ]
+    }
+  }
+}

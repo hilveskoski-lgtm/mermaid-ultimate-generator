@@ -1,0 +1,38 @@
+{
+  "type": "flowchart",
+  "data": {
+    "direction": "TD",
+    "nodes": [
+      {"id": "Start", "label": "Aloitus", "shape": "circle"},
+      {"id": "Input", "label": "Syöte", "shape": "parallelogram"},
+      {"id": "Process", "label": "Käsittely", "shape": "rect"},
+      {"id": "Decision", "label": "Ehto?", "shape": "diamond"},
+      {"id": "Output", "label": "Tulos", "shape": "parallelogram"},
+      {"id": "Error", "label": "Virhe", "shape": "rounded"},
+      {"id": "End", "label": "Lopetus", "shape": "circle"}
+    ],
+    "edges": [
+      {"from": "Start", "to": "Input"},
+      {"from": "Input", "to": "Process"},
+      {"from": "Process", "to": "Decision"},
+      {"from": "Decision", "to": "Output", "label": "Kyllä", "type": "arrow"},
+      {"from": "Decision", "to": "Error", "label": "Ei", "type": "arrow"},
+      {"from": "Error", "to": "Input", "type": "dotted"},
+      {"from": "Output", "to": "End"}
+    ],
+    "classes": [
+      {"name": "startEnd", "styles": "fill:#e1f5fe,stroke:#01579b,stroke-width:2px"},
+      {"name": "process", "styles": "fill:#f3e5f5,stroke:#4a148c,stroke-width:2px"},
+      {"name": "decision", "styles": "fill:#fff3e0,stroke:#e65100,stroke-width:2px"},
+      {"name": "io", "styles": "fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px"},
+      {"name": "error", "styles": "fill:#ffebee,stroke:#c62828,stroke-width:2px"}
+    ],
+    "class_assignments": [
+      {"nodes": ["Start", "End"], "class": "startEnd"},
+      {"nodes": ["Process", "Output"], "class": "process"},
+      {"nodes": ["Decision"], "class": "decision"},
+      {"nodes": ["Input"], "class": "io"},
+      {"nodes": ["Error"], "class": "error"}
+    ]
+  }
+}
