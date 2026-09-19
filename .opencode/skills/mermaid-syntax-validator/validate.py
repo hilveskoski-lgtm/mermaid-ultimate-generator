@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """
-Mermaid Syntax Validator
-Validates Mermaid diagram syntax against grammar rules and best practices.
+Fixed Mermaid Syntax Validator
+Fixes: 
+- Escape sequence normalization (\n, \t, etc.) to avoid fake word boundaries
+- Proper node/edge parsing without false positives from label content
 """
 
 import re
@@ -10,7 +12,7 @@ import json
 import argparse
 from pathlib import Path
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Optional, List
 from grammar import (
     DIAGRAM_TYPES, FLOWCHART_DIRECTIONS, NODE_SHAPES, EDGE_TYPES,
     THEMES, CONFIG_PATTERN, ID_PATTERN, VALIDATION_RULES
@@ -29,8 +31,8 @@ class ValidationError:
 @dataclass
 class ValidationResult:
     valid: bool
-    errors: list[ValidationError] = field(default_factory=list)
-    warnings: list[ValidationError] = field(default_factory=list)
+    errors: List[ValidationError] = field(default_factory=list)
+    warnings: List[ValidationError] = field(default_factory=list)
     diagram_type: Optional[str] = None
     node_count: int = 0
     edge_count: int = 0
@@ -38,14 +40,37 @@ class ValidationResult:
 
 class MermaidValidator:
     def __init__(self):
-        self.errors: list[ValidationError] = []
-        self.warnings: list[ValidationError] = []
+        self.errors: List[ValidationError] = []
+        self.warnings: List[ValidationError] = []
         self.nodes: set[str] = set()
-        self.edges: list[tuple[str, str]] = []
+        self.edges: List[tuple[str, str]] = []
         self.diagram_type: Optional[str] = None
         self.direction: Optional[str] = None
         self.theme: Optional[str] = None
         self._edge_only_nodes: set[str] = set()
+
+    def _normalize_escapes(self, line: str) -> str:
+        """Replace escape sequences with placeholders to avoid fake word boundaries."""
+        result = line
+        placeholder_id = 0
+        
+        escape_patterns = [
+            (r'\\n', '\x01'),   # \n -> placeholder
+            (r'\\t', '\x02'),   # \t -> placeholder
+            (r'\\r', '\x03'),   # \r -> placeholder
+            (r'\\\\', '\x04'),  # \\ -> placeholder
+            (r'\\"', '\x05'),   # \" -> placeholder
+            (r"\\'", '\x06'),   # \' -> placeholder
+        ]
+        
+        for pattern, placeholder in escape_patterns:
+            def repl(m):
+                nonlocal placeholder_id
+                placeholder_id += 1
+                return f'\x00ESC{placeholder_id}\x00'
+            result = re.sub(pattern, repl, result)
+        
+        return result
 
     def validate(self, content: str, filename: str = "<string>") -> ValidationResult:
         self.errors = []
@@ -55,11 +80,46 @@ class MermaidValidator:
         self.diagram_type = None
         self.direction = None
         self.theme = None
+        self._edge_only_nodes = set()
 
         lines = content.splitlines()
         self._check_diagram_type(lines)
         self._check_config(lines)
-        self._parse_content(lines)
+        
+        # First pass: parse nodes
+        for i, line in enumerate(lines):
+            stripped = line.strip()
+            if not stripped or stripped.startswith("%%"):
+                continue
+            
+            if self.diagram_type in ("flowchart", "graph"):
+                self._parse_flowchart_nodes(stripped, i + 1)
+            elif self.diagram_type == "sequenceDiagram":
+                self._parse_sequence_nodes(stripped, i + 1)
+            elif self.diagram_type == "classDiagram":
+                self._parse_class_nodes(stripped, i + 1)
+            elif self.diagram_type == "stateDiagram-v2":
+                self._parse_state_nodes(stripped, i + 1)
+            elif self.diagram_type == "erDiagram":
+                self._parse_er_nodes(stripped, i + 1)
+
+        # Second pass: parse edges after all nodes are known
+        for i, line in enumerate(lines):
+            stripped = line.strip()
+            if not stripped or stripped.startswith("%%"):
+                continue
+            
+            if self.diagram_type in ("flowchart", "graph"):
+                self._parse_flowchart_edges(stripped, i + 1)
+            elif self.diagram_type == "sequenceDiagram":
+                self._parse_sequence_edges(stripped, i + 1)
+            elif self.diagram_type == "classDiagram":
+                self._parse_class_edges(stripped, i + 1)
+            elif self.diagram_type == "stateDiagram-v2":
+                self._parse_state_edges(stripped, i + 1)
+            elif self.diagram_type == "erDiagram":
+                self._parse_er_edges(stripped, i + 1)
+
         self._validate_structure()
 
         return ValidationResult(
@@ -71,7 +131,7 @@ class MermaidValidator:
             edge_count=len(self.edges),
         )
 
-    def _check_diagram_type(self, lines: list[str]):
+    def _check_diagram_type(self, lines: List[str]):
         for i, line in enumerate(lines):
             stripped = line.strip()
             if not stripped or stripped.startswith("%%"):
@@ -84,7 +144,7 @@ class MermaidValidator:
                 self._add_error("required_diagram_type", VALIDATION_RULES["required_diagram_type"], i + 1, 1)
                 return
 
-    def _check_config(self, lines: list[str]):
+    def _check_config(self, lines: List[str]):
         for i, line in enumerate(lines):
             match = re.search(CONFIG_PATTERN, line)
             if match:
@@ -100,38 +160,33 @@ class MermaidValidator:
                 except json.JSONDecodeError:
                     self._add_error("valid_config", "Invalid JSON in config", i + 1, match.start())
 
-    def _parse_content(self, lines: list[str]):
-        for i, line in enumerate(lines):
-            stripped = line.strip()
-            if not stripped or stripped.startswith("%%"):
-                continue
-
-            if self.diagram_type in ("flowchart", "graph") and self.direction is None:
-                dir_match = re.match(r"^(TD|TB|BT|RL|LR)\b", stripped)
-                if dir_match:
-                    self.direction = dir_match.group(1)
-                    if self.direction not in FLOWCHART_DIRECTIONS:
-                        self._add_error("valid_direction", f"Invalid direction: {self.direction}", i + 1, 1)
-                    continue
-
-            if self.diagram_type in ("flowchart", "graph"):
-                self._parse_flowchart_nodes(stripped, i + 1)
-                self._parse_flowchart_edges(stripped, i + 1)
-            elif self.diagram_type == "sequenceDiagram":
-                self._parse_sequence_nodes(stripped, i + 1)
-                self._parse_sequence_edges(stripped, i + 1)
-            elif self.diagram_type == "classDiagram":
-                self._parse_class_nodes(stripped, i + 1)
-                self._parse_class_edges(stripped, i + 1)
-            elif self.diagram_type == "stateDiagram-v2":
-                self._parse_state_nodes(stripped, i + 1)
-                self._parse_state_edges(stripped, i + 1)
-            elif self.diagram_type == "erDiagram":
-                self._parse_er_nodes(stripped, i + 1)
-                self._parse_er_edges(stripped, i + 1)
+    def _normalize_escapes(self, line: str) -> str:
+        """Replace escape sequences with placeholders to avoid fake word boundaries."""
+        result = line
+        placeholder_id = 0
+        
+        escape_patterns = [
+            (r'\\n', '\x01'),   # \n -> placeholder
+            (r'\\t', '\x02'),   # \t -> placeholder
+            (r'\\r', '\x03'),   # \r -> placeholder
+            (r'\\\\', '\x04'),  # \\ -> placeholder
+            (r'\\"', '\x05'),   # \" -> placeholder
+            (r"\\'", '\x06'),   # \' -> placeholder
+        ]
+        
+        for pattern, placeholder in escape_patterns:
+            def repl(m):
+                nonlocal placeholder_id
+                placeholder_id += 1
+                return f'\x00ESC{placeholder_id}\x00'
+            result = re.sub(pattern, repl, result)
+        
+        return result
 
     def _parse_flowchart_nodes(self, line: str, line_num: int):
-        # Ordered from most specific to least specific to avoid double-matching
+        # Normalize escape sequences to avoid fake word boundaries from \n, \t, etc.
+        normalized_line = self._normalize_escapes(line)
+        
         patterns = [
             (r"(" + ID_PATTERN + r")\s*\[\[([^\]]*)\]\]", "subroutine"),
             (r"(" + ID_PATTERN + r")\s*\[\(([^)]*)\)\]", "cylindrical"),
@@ -140,30 +195,30 @@ class MermaidValidator:
             (r"(" + ID_PATTERN + r")\s*\(\(([^)]*)\)\)", "circle"),
             (r"(" + ID_PATTERN + r")\s*\{([^}]*)\}", "diamond"),
             (r"(" + ID_PATTERN + r")\s*>([^\]]*)\]", "asymmetric"),
-            (r"(" + ID_PATTERN + r")\s*\(([^)]*)\)", "rounded"),
-            # Rect: [text] but not [/.../], [\...], [[...]], [(...)]
+            (r"(" + ID_PATTERN + r")\(([^)]*)\)", "rounded"),
             (r"(" + ID_PATTERN + r")\s*\[(?![/\\\[\(])([^\]\n]*)\]", "rect"),
         ]
 
         for pattern, _ in patterns:
-            for match in re.finditer(pattern, line):
+            for match in re.finditer(pattern, normalized_line):
                 node_id = match.group(1)
                 self._register_node(node_id, line_num, match.start(1))
 
-        # Check for invalid IDs (starting with digit) followed by node shape chars
         invalid_id_pattern = r"\b([0-9][A-Za-z0-9_]*)\s*(?:\[|\{|\(|>|\[/|\[\\|\[\[|\[\(|\(\))"
         for match in re.finditer(invalid_id_pattern, line):
             node_id = match.group(1)
             self._add_error("valid_ids", f"Invalid node ID (must start with letter): {node_id}", line_num, match.start(1))
 
     def _parse_flowchart_edges(self, line: str, line_num: int):
-        edge_patterns = [
-            r"(" + ID_PATTERN + r")\s*(--->|---|-\.->|==>|-->)\s*(" + ID_PATTERN + r")",
-        ]
-        for pattern in edge_patterns:
-            for match in re.finditer(pattern, line):
-                from_id, edge_type, to_id = match.groups()
+        normalized_line = self._normalize_escapes(line)
+        
+        edge_pattern = r"(" + ID_PATTERN + r")\s*(--->|---|-\.->|==>|-->)\s*(" + ID_PATTERN + r")"
+        
+        for match in re.finditer(edge_pattern, normalized_line):
+            from_id, edge_type, to_id = match.groups()
+            if from_id in self.nodes and to_id in self.nodes:
                 self.edges.append((from_id, to_id))
+            elif from_id in self.nodes or to_id in self.nodes:
                 self._check_edge_refs(from_id, to_id, line_num, match.start(1))
 
     def _parse_sequence_nodes(self, line: str, line_num: int):
@@ -198,21 +253,17 @@ class MermaidValidator:
             alias = match.group(2)
             node_id = alias if alias else name
             self._register_node(node_id, line_num, match.start(1))
-        for match in re.finditer(r"\[\*\]", line):
-            pass
 
     def _parse_state_edges(self, line: str, line_num: int):
-        pattern = r"(" + ID_PATTERN + r")\s*(-->)?\s*(" + ID_PATTERN + r")"
+        pattern = r"(" + ID_PATTERN + r")\s*-->\s*(" + ID_PATTERN + r")"
         for match in re.finditer(pattern, line):
-            from_id, arrow, to_id = match.groups()
-            if arrow:
-                # Register nodes implicitly defined by edges
-                self._register_node(from_id, line_num, match.start(1), explicit=False)
-                self._register_node(to_id, line_num, match.start(3), explicit=False)
+            from_id, to_id = match.groups()
+            if from_id in self.nodes and to_id in self.nodes:
                 self.edges.append((from_id, to_id))
+            elif from_id in self.nodes or to_id in self.nodes:
+                self._check_edge_refs(from_id, to_id, line_num, match.start(1))
 
     def _parse_er_nodes(self, line: str, line_num: int):
-        # Match entity definitions: "EntityName {" at start of line (after indent)
         for match in re.finditer(r"^\s*(" + ID_PATTERN + r")\s*\{", line):
             self._register_node(match.group(1), line_num, match.start(1))
 
@@ -246,6 +297,35 @@ class MermaidValidator:
         if len(self.nodes) == 0:
             self._add_error("at_least_one_node", VALIDATION_RULES["at_least_one_node"], 1, 1)
 
+    def _check_diagram_type(self, lines: List[str]):
+        for i, line in enumerate(lines):
+            stripped = line.strip()
+            if not stripped or stripped.startswith("%%"):
+                continue
+            first_word = stripped.split()[0] if stripped.split() else ""
+            if first_word in DIAGRAM_TYPES:
+                self.diagram_type = first_word
+                return
+            else:
+                self._add_error("required_diagram_type", VALIDATION_RULES["required_diagram_type"], i + 1, 1)
+                return
+
+    def _check_config(self, lines: List[str]):
+        for i, line in enumerate(lines):
+            match = re.search(CONFIG_PATTERN, line)
+            if match:
+                try:
+                    config_str = match.group(1).replace("'", '"')
+                    config = json.loads(config_str)
+                    if "theme" in config:
+                        theme = config["theme"]
+                        if theme not in THEMES:
+                            self._add_warning("valid_theme", f"Unknown theme: {theme}", i + 1, match.start())
+                        else:
+                            self.theme = theme
+                except json.JSONDecodeError:
+                    self._add_error("valid_config", "Invalid JSON in config", i + 1, match.start())
+
     def _add_error(self, rule: str, message: str, line: int, column: int):
         self.errors.append(ValidationError(rule, message, line, column, "error"))
 
@@ -260,7 +340,7 @@ def validate_file(filepath: Path) -> ValidationResult:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Validate Mermaid diagram syntax")
+    parser = argparse.ArgumentParser(description="Validate Mermaid diagram syntax (fixed)")
     parser.add_argument("files", nargs="*", type=Path, help="Files to validate")
     parser.add_argument("--vault", type=Path, help="Validate all .md/.mmd files in vault")
     parser.add_argument("--json", action="store_true", help="Output JSON")
