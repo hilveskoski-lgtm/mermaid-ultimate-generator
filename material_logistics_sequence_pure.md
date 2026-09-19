@@ -1,6 +1,6 @@
 # material_logistics_sequence_pure
 
-```mermaid
+`mermaid
 sequenceDiagram
     autonumber
     actor Planner as Suunnittelija
@@ -113,4 +113,4 @@ sequenceDiagram
     ERP-->>Mobile: Tehtava valmis, tunnit: 4.5h
     deactivate ERP
     deactivate Mobile
-```
+`

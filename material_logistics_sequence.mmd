@@ -1,8 +1,3 @@
-# Materiaalin logistiikka — Sequence Diagram
-
-## Aikajärjestys: Tehtävän suunnittelu → Tarveluettelo → Tilaus → Toimitus → Vastaanotto → Varastointi
-
-```mermaid
 sequenceDiagram
     autonumber
     actor Planner as Suunnittelija
@@ -115,54 +110,3 @@ sequenceDiagram
     ERP-->>Mobile: Tehtävä valmis, tunnit: 4.5h
     deactivate ERP
     deactivate Mobile
-```
-
-## Poikkeamapolut (Exception Flows)
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor SiteManager as Työmaapäällikkö
-    participant Mobile as Mobiilisovellus
-    participant ERP as ERP-järjestelmä
-    participant Supplier as Toimittaja
-    
-    Note over SiteManager,Supplier: POIKKEAMA: Materiaali puuttuu tehtävän aloituksessa
-    
-    Worker->>Mobile: Yritä aloittaa tehtävä
-    activate Mobile
-    Mobile->>ERP: Tarkista materiaalit
-    activate ERP
-    ERP-->>Mobile: ❌ Ei varattuja materiaaleja
-    deactivate ERP
-    Mobile-->>Worker: Este: Materiaalit puuttuvat
-    deactivate Mobile
-    
-    Worker->>SiteManager: Ilmoita este (Mobile: "Block task")
-    SiteManager->>Mobile: Luo acil-materiaalipyyntö (HIGH priority)
-    activate Mobile
-    Mobile->>ERP: Luo MR-043 (priority: URGENT)
-    activate ERP
-    ERP->>Supplier: Express-tilaus (lisäkulu)
-    activate Supplier
-    Supplier-->>ERP: Toimitus samana päivänä (express-kuljetus)
-    deactivate Supplier
-    ERP-->>Mobile: Acil-tilaus luotu
-    deactivate ERP
-    deactivate Mobile
-    
-    Note over SiteManager,Supplier: POIKKEAMA: Laaduvirhe vastaanotossa
-    
-    SiteManager->>Mobile: Merkitse toimitus hylätyksi (laatu)
-    activate Mobile
-    Mobile->>ERP: DeliveryRejected(DLV-089, reason: "surface damage")
-    activate ERP
-    ERP->>ERP: Luo palautus/korvauspyyntö (RMA-012)
-    ERP->>Supplier: Lähetä RMA
-    activate Supplier
-    Supplier-->>ERP: Hyväksy palautus, lähetä uusi
-    deactivate Supplier
-    ERP-->>Mobile: RMA luotu, korvaus tiellä
-    deactivate ERP
-    deactivate Mobile
-```

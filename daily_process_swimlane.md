@@ -1,9 +1,9 @@
 # daily_process_swimlane
 
-```mermaid
+`mermaid
 flowchart TD
     %% AAMU: 06:00-08:00
-    subgraph Morning["🌅 AAMU (06:00-08:00)"]
+    subgraph Morning["AAMU (06:00-08:00)"]
         direction TB
         
         subgraph Worker_M["👷 Työntekijä"]
@@ -34,7 +34,7 @@ flowchart TD
     end
     
     %% ENNEN AAMUPAUSIA: 08:00-10:00
-    subgraph BeforeBreak["☕ ENNEN AAMUPAUSIA (08:00-10:00)"]
+    subgraph BeforeBreak["ENNEN AAMUPAUSIA (08:00-10:00)"]
         direction TB
         
         subgraph Worker_B["👷 Työntekijä"]
@@ -69,14 +69,14 @@ flowchart TD
     end
     
     %% AAMUPAUSA: 10:00-10:30
-    subgraph Break1["🥪 AAMUPAUSA (10:00-10:30)"]
+    subgraph Break1["AAMUPAUSA (10:00-10:30)"]
         direction TB
         B1[Työntekijät: Lepo,\nruokailu] --> B2[Työmaapäällikkö: Pika-arvio\nedistymisestä vs. suunnitelma]
         B2 --> B3[Turvallisuus: Päivitä\nriskikortit jos muutos]
     end
     
     %% ENNEN LOUNASTA: 10:30-12:00
-    subgraph BeforeLunch["🔨 ENNEN LOUNASTA (10:30-12:00)"]
+    subgraph BeforeLunch["ENNEN LOUNASTA (10:30-12:00)"]
         direction TB
         
         subgraph Worker_L["👷 Työntekijä"]
@@ -103,7 +103,7 @@ flowchart TD
     end
     
     %% LOUNAS: 12:00-12:45
-    subgraph Lunch["🍽️ LOUNAS (12:00-12:45)"]
+    subgraph Lunch["LOUNAS (12:00-12:45)"]
         direction TB
         L1[Työntekijät: Ruokailu,\nlevähdys] --> L2[Työmaapäällikkö: Tarkista\nhuomisen toimitukset]
         L2 --> L3[Suunnittelija: Päivitä\nmateriaaliprognosit]
@@ -141,7 +141,7 @@ flowchart TD
     end
     
     %% VUORONVAIHTO: 15:30-16:00
-    subgraph Handover["🔄 VUORONVAIHTO (15:30-16:00)"]
+    subgraph Handover["VUORONVAIHTO (15:30-16:00)"]
         direction TB
         H1[Työntekijä: Tehtävän-\nsiirtymäilmoitus (Mobile)] --> H2[Työmaapäällikkö: Vuoron-\nyhteenveto (Mobile)]
         H2 --> H3[Suunnittelija: Päivitä\nedistymisdata ERP:ään]
@@ -169,4 +169,4 @@ flowchart TD
     class S1,S2,S3,SB1,SB2,SB3,SB4,SL1,SL2,SL3,SA1,SA2 safety;
     class P1,P2 planner;
     class B1,B2,B3,L1,L2,L3,H1,H2,H3,H4,H5 break;
-```
+`

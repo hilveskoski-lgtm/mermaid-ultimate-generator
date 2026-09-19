@@ -1,6 +1,6 @@
 # material_logistics_er
 
-```mermaid
+`mermaid
 erDiagram
     WORKSITE ||--o{ WORK_PACKAGE : contains
     WORK_PACKAGE ||--o{ TASK : contains
@@ -140,4 +140,4 @@ erDiagram
         date last_counted
         string location_on_site
     }
-```
+`

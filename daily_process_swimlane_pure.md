@@ -1,6 +1,6 @@
 # daily_process_swimlane_pure
 
-```mermaid
+`mermaid
 flowchart TD
     %% NODE DEFINITIONS
     %% Morning
@@ -23,9 +23,9 @@ flowchart TD
     WB2[Suorita tyota / Toteuta laadunvalvonta]
     WB3_dec{Kaikki materiaalit kassissa?}
     WB4[Ilmoita puute (Mobile: Block Task)]
-    WB5[Jatka tyota / Dokumentoi edistyminen]
+    WB5[Jatka tyota / Dokumentoi eteneminen]
     WB6[Tyomaapallikko ratkaisee]
-    WB7[Paivita edistyminen (Progress 25%)]
+    WB7[Paivita eteneminen 25%]
     MB1[Kay tyopaikkoja / Valvo edistymista]
     MB2_dec{Ratkaise esteet}
     MB3[Ota yhteys toimittajaan/ERP]
@@ -46,7 +46,7 @@ flowchart TD
     %% Before Lunch
     WL1[Jatka tehtavaa / Tai aloita uusi]
     WL2[Keskustelu vuorokaverin kanssa: siirtymatiedot]
-    WL3[Paivita edistyminen (Progress 50-75%)]
+    WL3[Paivita eteneminen 50-75%]
     WL4[Laadun tarkistus itsetarkastus]
     ML1[Keskustelu toimittajien kanssa (paivan toimitukset)]
     ML2[Tarkista aamun tehtavien tila]
@@ -164,4 +164,4 @@ flowchart TD
     class S1,S2,S3,SB1,SB2_dec,SB3,SB4,SL1,SL2_dec,SL3,SA1,SA2 safety;
     class P1,P2 planner;
     class B1,B2,B3,L1,L2,L3,H1,H2,H3,H4,H5 break;
-```
+`
