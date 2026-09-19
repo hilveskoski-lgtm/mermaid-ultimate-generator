@@ -1,168 +1,335 @@
-flowchart TD
-    %% AAMU: 06:00-08:00
-    subgraph Morning["AAMU (06:00-08:00)"]
-        direction TB
-        
-        subgraph Worker_M[" Työntekijä"]
-            W1[Saapu työmaalle\nTarkista viestit] --> W2[Hae PPE-lokerosta]
-            W2 --> W3[Mene tehtävän paikkaan]
-            W3 --> W4[Tarkista materiaalit\nja työkalut]
-        end
-        
-        subgraph Manager_M[" Työmaapäällikkö"]
-            M1[Saapu työmaalle\nKäy läpi päivän suunnitelma] --> M2[Aamukokous (15 min)\n- Tehtävät\n- Resurssit\n- Riskit\n- Sää]
-            M2 --> M3[Tarkista aamun\nmateriaalitoimitukset]
-            M3 --> M4[Vahvista tehtävänjaot\nja prioriteetit]
-        end
-        
-        subgraph Safety_M[" Turvallisuus"]
-            S1[TYA/TYH-tarkistus\ntehtäväkohtaiset riskit] --> S2[Turvallisuusympyrä\n(kierroksella)]
-            S2 --> S3[Päivitä riskikortit\njos tarpeen]
-        end
-        
-        subgraph Planner_M[" Suunnittelija"]
-            P1[Tarkista avoimet\nmateriaalipyyntökset] --> P2[Vahvista acil-tilaukset]
-        end
-        
-        M2 -.->|Ohjeista| W1
-        M4 -.->|Tehtävälista| W3
-        S2 -.->|Osallistuu| W1
-        S2 -.->|Ohjaa| M2
-    end
-    
-    %% ENNEN AAMUPAUSIA: 08:00-10:00
-    subgraph BeforeBreak["ENNEN AAMUPAUSIA (08:00-10:00)"]
-        direction TB
-        
-        subgraph Worker_B[" Työntekijä"]
-            WB1[Aloita tehtävä\n(Mobile: Start Task)] --> WB2[Suorita työtä\nToteuta laadunvalvonta]
-            WB2 --> WB3{Kaikki\nmateriaalit\nkäsissä?}
-            WB3 -->|Ei| WB4[Ilmoita puute\n(Mobile: Block Task)]
-            WB3 -->|Kyllä| WB5[Jatka työtä\nDokumentoi edistyminen]
-            WB4 --> WB6[Työmaapäällikkö\nratkaisee]
-            WB6 --> WB5
-            WB5 --> WB7[Päivitä edistyminen\n(Mobile: Progress 25%)]
-        end
-        
-        subgraph Manager_B[" Työmaapäällikkö"]
-            MB1[Käy työpaikkoja\nValvo edistymistä] --> MB2{Ratkaise\nesteet}
-            MB2 -->|Materiaali| MB3[Ota yhteys\ntoimittajaan/ERP]
-            MB2 -->|Resurssi| MB4[Siirrä henkilöstä\ntai palkkaa apu]
-            MB2 -->|Tekninen| MB5[Kysy suunnittelijalta\n/ asiantuntijalta]
-            MB3 --> MB6[Päivitä suunnitelma\nERP:ä]
-            MB4 --> MB6
-            MB5 --> MB6
-            MB6 --> MB7[Viesti muutos\nryhmälle (Mobile)]
-        end
-        
-        subgraph Safety_B[" Turvallisuus"]
-            SB1[Valvo PPE:n käyttöä\nja turva-asetuksia] --> SB2{Merkitse\npoikkeama?}
-            SB2 -->|Kyllä| SB3[Luo turvallisuus-\nhavainto (Mobile)]
-            SB2 -->|Ei| SB4[Jatka valvontaa]
-        end
-        
-        WB4 -.->|Este| MB2
-        WB7 -.->|Dataa| MB1
-    end
-    
-    %% AAMUPAUSA: 10:00-10:30
-    subgraph Break1["AAMUPAUSA (10:00-10:30)"]
-        direction TB
-        B1[Työntekijät: Lepo,\nruokailu] --> B2[Työmaapäällikkö: Pika-arvio\nedistymisestä vs. suunnitelma]
-        B2 --> B3[Turvallisuus: Päivitä\nriskikortit jos muutos]
-    end
-    
-    %% ENNEN LOUNASTA: 10:30-12:00
-    subgraph BeforeLunch["ENNEN LOUNASTA (10:30-12:00)"]
-        direction TB
-        
-        subgraph Worker_L[" Työntekijä"]
-            WL1[Jatka tehtävää\nTai aloita uusi] --> WL2[Keskustelu vuorokaverin\nkanssa: siirtymätiedot]
-            WL2 --> WL3[Päivitä edistyminen\n(Mobile: Progress 50-75%)]
-            WL3 --> WL4[Laadun tarkistus\nitsetarkastus]
-        end
-        
-        subgraph Manager_L[" Työmaapäällikkö"]
-            ML1[Keskustelu toimittajien\nkanssa (päivän toimitukset)] --> ML2[Tarkista aamun\ntehtävien tila]
-            ML2 --> ML3{Päätös:\nJatketaanko / muuuttaako?}
-            ML3 -->|Jatka| ML4[Varmista after-\nnoon resurssit]
-            ML3 -->|Muuta| ML5[Päivitä suunnitelma\nERP:ään]
-            ML4 --> ML6[Viesti tiimille]
-            ML5 --> ML6
-        end
-        
-        subgraph Safety_L[" Turvallisuus"]
-            SL1[Kierros työmaalla\nTarkista scaffolding,\nsuojausverkot] --> SL2{Merkitse\npoikkeama?}
-            SL2 -->|Kyllä| SL3[Havainto → ERP\n→ Toimenpide]
-        end
-        
-        WL4 -.->|Laatu OK| ML2
-    end
-    
-    %% LOUNAS: 12:00-12:45
-    subgraph Lunch["LOUNAS (12:00-12:45)"]
-        direction TB
-        L1[Työntekijät: Ruokailu,\nlevähdys] --> L2[Työmaapäällikkö: Tarkista\nhuomisen toimitukset]
-        L2 --> L3[Suunnittelija: Päivitä\nmateriaaliprognosit]
-    end
-    
-    %% ILTAPÄIVÄ: 12:45-15:30
-    subgraph Afternoon[" ILTAPÄIVÄ (12:45-15:30)"]
-        direction TB
-        
-        subgraph Worker_A[" Työntekijä"]
-            WA1[Jatka/aloita tehtävä] --> WA2[Tiivistä tehtävä\nKohti valmiutta]
-            WA2 --> WA3[Laadun tarkistus\n(itsetarkastus + hyväksyntä)]
-            WA3 --> WA4{Laatu\nOK?}
-            WA4 -->|Ei| WA5[Korjaa / tee uudelleen]
-            WA4 -->|Kyllä| WA6[Merkitse valmiiksi\n(Mobile: Complete Task)]
-            WA5 --> WA3
-            WA6 --> WA7[Siivoa työpaikka\nPalauta työkalut]
-        end
-        
-        subgraph Manager_A[" Työmaapäällikkö"]
-            MA1[Hyväksy valmiit\ntehtävät (Mobile)] --> MA2[Tarkista CRIT-polut\nkriittiset tehtävät]
-            MA2 --> MA3{Onko\nekritisia?}
-            MA3 -->|Kyllä| MA4[Eskaloi / lisää\nresursseja]
-            MA3 -->|Ei| MA5[Päivitä huomisen\nsuunnitelma]
-            MA4 --> MA6[Viesti tiimille\n& asiakkaalle]
-            MA5 --> MA6
-        end
-        
-        subgraph Safety_A[" Turvallisuus"]
-            SA1[Lopullinen kierros\nLukitus/turvaus] --> SA2[Päivän turvallisuus-\nraportti (Mobile)]
-        end
-        
-        WA6 -.->|Valmis| MA1
-        WA7 -.->|Data| MA5
-    end
-    
-    %% VUORONVAIHTO: 15:30-16:00
-    subgraph Handover["VUORONVAIHTO (15:30-16:00)"]
-        direction TB
-        H1[Työntekijä: Tehtävän-\nsiirtymäilmoitus (Mobile)] --> H2[Työmaapäällikkö: Vuoron-\nyhteenveto (Mobile)]
-        H2 --> H3[Suunnittelija: Päivitä\nedistymisdata ERP:ään]
-        H3 --> H4[Turvallisuus: Arkistoi\npäivän havainnot]
-        H4 --> H5[ERP: Automaattinen\npäivän raportti → Johto]
-    end
-    
-    %% YHTEYDET VÄLILLÄ
-    Morning -.->|Siirtymä| BeforeBreak
-    BeforeBreak -.->|Siirtymä| Break1
-    Break1 -.->|Siirtymä| BeforeLunch
-    BeforeLunch -.->|Siirtymä| Lunch
-    Lunch -.->|Siirtymä| Afternoon
-    Afternoon -.->|Siirtymä| Handover
-    
-    %% TYYLIT
-    classDef worker fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#000;
-    classDef manager fill:#fff3e0,stroke:#ef6c00,stroke-width:2px,color:#000;
-    classDef safety fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#000;
-    classDef planner fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#000;
-    classDef break fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,stroke-dasharray: 5 5,color:#000;
-    
-    class W1,W2,W3,W4,WB1,WB2,WB3,WB4,WB5,WB6,WB7,WL1,WL2,WL3,WL4,WA1,WA2,WA3,WA4,WA5,WA6,WA7 worker;
-    class M1,M2,M3,M4,MB1,MB2,MB3,MB4,MB5,MB6,MB7,ML1,ML2,ML3,ML4,ML5,ML6,MA1,MA2,MA3,MA4,MA5,MA6 manager;
-    class S1,S2,S3,SB1,SB2,SB3,SB4,SL1,SL2,SL3,SA1,SA2 safety;
-    class P1,P2 planner;
+flowchart TD
+
+    %% AAMU: 06:00-08:00
+
+    subgraph Morning["AAMU (06:00-08:00)"]
+
+        direction TB
+
+        
+
+        subgraph Worker_M[" Tyontekija"]
+
+            W1[Saapu tyomaalle\nTarkista viestit] --> W2[Hae PPE-lokerosta]
+
+            W2 --> W3[Mene tehtavan paikkaan]
+
+            W3 --> W4[Tarkista materiaalit\nja tyokalut]
+
+        end
+
+        
+
+        subgraph Manager_M[" Tyomaapaallikko"]
+
+            M1[Saapu tyomaalle\nKay lapi paivan suunnitelma] --> M2[Aamukokous (15 min)\n- Tehtavat\n- Resurssit\n- Riskit\n- Saa]
+
+            M2 --> M3[Tarkista aamun\nmateriaalitoimitukset]
+
+            M3 --> M4[Vahvista tehtavanjaot\nja prioriteetit]
+
+        end
+
+        
+
+        subgraph Safety_M[" Turvallisuus"]
+
+            S1[TYA/TYH-tarkistus\ntehtavakohtaiset riskit] --> S2[Turvallisuusympyra\n(kierroksella)]
+
+            S2 --> S3[Paivita riskikortit\njos tarpeen]
+
+        end
+
+        
+
+        subgraph Planner_M[" Suunnittelija"]
+
+            P1[Tarkista avoimet\nmateriaalipyyntokset] --> P2[Vahvista acil-tilaukset]
+
+        end
+
+        
+
+        M2 -.->|Ohjeista| W1
+
+        M4 -.->|Tehtavalista| W3
+
+        S2 -.->|Osallistuu| W1
+
+        S2 -.->|Ohjaa| M2
+
+    end
+
+    
+
+    %% ENNEN AAMUPAUSIA: 08:00-10:00
+
+    subgraph BeforeBreak["ENNEN AAMUPAUSIA (08:00-10:00)"]
+
+        direction TB
+
+        
+
+        subgraph Worker_B[" Tyontekija"]
+
+            WB1[Aloita tehtava\n(Mobile: Start Task)] --> WB2[Suorita tyota\nToteuta laadunvalvonta]
+
+            WB2 --> WB3{Kaikki\nmateriaalit\nkasissa?}
+
+            WB3 -->|Ei| WB4[Ilmoita puute\n(Mobile: Block Task)]
+
+            WB3 -->|Kylla| WB5[Jatka tyota\nDokumentoi edistyminen]
+
+            WB4 --> WB6[Tyomaapaallikko\nratkaisee]
+
+            WB6 --> WB5
+
+            WB5 --> WB7[Paivita edistyminen\n(Mobile: Progress 25%)]
+
+        end
+
+        
+
+        subgraph Manager_B[" Tyomaapaallikko"]
+
+            MB1[Kay tyopaikkoja\nValvo edistymista] --> MB2{Ratkaise\nesteet}
+
+            MB2 -->|Materiaali| MB3[Ota yhteys\ntoimittajaan/ERP]
+
+            MB2 -->|Resurssi| MB4[Siirra henkilosta\ntai palkkaa apu]
+
+            MB2 -->|Tekninen| MB5[Kysy suunnittelijalta\n/ asiantuntijalta]
+
+            MB3 --> MB6[Paivita suunnitelma\nERP:a]
+
+            MB4 --> MB6
+
+            MB5 --> MB6
+
+            MB6 --> MB7[Viesti muutos\nryhmalle (Mobile)]
+
+        end
+
+        
+
+        subgraph Safety_B[" Turvallisuus"]
+
+            SB1[Valvo PPE:n kayttoa\nja turva-asetuksia] --> SB2{Merkitse\npoikkeama?}
+
+            SB2 -->|Kylla| SB3[Luo turvallisuus-\nhavainto (Mobile)]
+
+            SB2 -->|Ei| SB4[Jatka valvontaa]
+
+        end
+
+        
+
+        WB4 -.->|Este| MB2
+
+        WB7 -.->|Dataa| MB1
+
+    end
+
+    
+
+    %% AAMUPAUSA: 10:00-10:30
+
+    subgraph Break1["AAMUPAUSA (10:00-10:30)"]
+
+        direction TB
+
+        B1[Tyontekijat: Lepo,\nruokailu] --> B2[Tyomaapaallikko: Pika-arvio\nedistymisesta vs. suunnitelma]
+
+        B2 --> B3[Turvallisuus: Paivita\nriskikortit jos muutos]
+
+    end
+
+    
+
+    %% ENNEN LOUNASTA: 10:30-12:00
+
+    subgraph BeforeLunch["ENNEN LOUNASTA (10:30-12:00)"]
+
+        direction TB
+
+        
+
+        subgraph Worker_L[" Tyontekija"]
+
+            WL1[Jatka tehtavaa\nTai aloita uusi] --> WL2[Keskustelu vuorokaverin\nkanssa: siirtymatiedot]
+
+            WL2 --> WL3[Paivita edistyminen\n(Mobile: Progress 50-75%)]
+
+            WL3 --> WL4[Laadun tarkistus\nitsetarkastus]
+
+        end
+
+        
+
+        subgraph Manager_L[" Tyomaapaallikko"]
+
+            ML1[Keskustelu toimittajien\nkanssa (paivan toimitukset)] --> ML2[Tarkista aamun\ntehtavien tila]
+
+            ML2 --> ML3{Paatos:\nJatketaanko / muuuttaako?}
+
+            ML3 -->|Jatka| ML4[Varmista after-\nnoon resurssit]
+
+            ML3 -->|Muuta| ML5[Paivita suunnitelma\nERP:aan]
+
+            ML4 --> ML6[Viesti tiimille]
+
+            ML5 --> ML6
+
+        end
+
+        
+
+        subgraph Safety_L[" Turvallisuus"]
+
+            SL1[Kierros tyomaalla\nTarkista scaffolding,\nsuojausverkot] --> SL2{Merkitse\npoikkeama?}
+
+            SL2 -->|Kylla| SL3[Havainto -> ERP\n-> Toimenpide]
+
+        end
+
+        
+
+        WL4 -.->|Laatu OK| ML2
+
+    end
+
+    
+
+    %% LOUNAS: 12:00-12:45
+
+    subgraph Lunch["LOUNAS (12:00-12:45)"]
+
+        direction TB
+
+        L1[Tyontekijat: Ruokailu,\nlevahdys] --> L2[Tyomaapaallikko: Tarkista\nhuomisen toimitukset]
+
+        L2 --> L3[Suunnittelija: Paivita\nmateriaaliprognosit]
+
+    end
+
+    
+
+    %% ILTAPAIVA: 12:45-15:30
+
+    subgraph Afternoon[" ILTAPAIVA (12:45-15:30)"]
+
+        direction TB
+
+        
+
+        subgraph Worker_A[" Tyontekija"]
+
+            WA1[Jatka/aloita tehtava] --> WA2[Tiivista tehtava\nKohti valmiutta]
+
+            WA2 --> WA3[Laadun tarkistus\n(itsetarkastus + hyvaksynta)]
+
+            WA3 --> WA4{Laatu\nOK?}
+
+            WA4 -->|Ei| WA5[Korjaa / tee uudelleen]
+
+            WA4 -->|Kylla| WA6[Merkitse valmiiksi\n(Mobile: Complete Task)]
+
+            WA5 --> WA3
+
+            WA6 --> WA7[Siivoa tyopaikka\nPalauta tyokalut]
+
+        end
+
+        
+
+        subgraph Manager_A[" Tyomaapaallikko"]
+
+            MA1[Hyvaksy valmiit\ntehtavat (Mobile)] --> MA2[Tarkista CRIT-polut\nkriittiset tehtavat]
+
+            MA2 --> MA3{Onko\nekritisia?}
+
+            MA3 -->|Kylla| MA4[Eskaloi / lisaa\nresursseja]
+
+            MA3 -->|Ei| MA5[Paivita huomisen\nsuunnitelma]
+
+            MA4 --> MA6[Viesti tiimille\n& asiakkaalle]
+
+            MA5 --> MA6
+
+        end
+
+        
+
+        subgraph Safety_A[" Turvallisuus"]
+
+            SA1[Lopullinen kierros\nLukitus/turvaus] --> SA2[Paivan turvallisuus-\nraportti (Mobile)]
+
+        end
+
+        
+
+        WA6 -.->|Valmis| MA1
+
+        WA7 -.->|Data| MA5
+
+    end
+
+    
+
+    %% VUORONVAIHTO: 15:30-16:00
+
+    subgraph Handover["VUORONVAIHTO (15:30-16:00)"]
+
+        direction TB
+
+        H1[Tyontekija: Tehtavan-\nsiirtymailmoitus (Mobile)] --> H2[Tyomaapaallikko: Vuoron-\nyhteenveto (Mobile)]
+
+        H2 --> H3[Suunnittelija: Paivita\nedistymisdata ERP:aan]
+
+        H3 --> H4[Turvallisuus: Arkistoi\npaivan havainnot]
+
+        H4 --> H5[ERP: Automaattinen\npaivan raportti -> Johto]
+
+    end
+
+    
+
+    %% YHTEYDET VALILLA
+
+    Morning -.->|Siirtyma| BeforeBreak
+
+    BeforeBreak -.->|Siirtyma| Break1
+
+    Break1 -.->|Siirtyma| BeforeLunch
+
+    BeforeLunch -.->|Siirtyma| Lunch
+
+    Lunch -.->|Siirtyma| Afternoon
+
+    Afternoon -.->|Siirtyma| Handover
+
+    
+
+    %% TYYLIT
+
+    classDef worker fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#000;
+
+    classDef manager fill:#fff3e0,stroke:#ef6c00,stroke-width:2px,color:#000;
+
+    classDef safety fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#000;
+
+    classDef planner fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#000;
+
+    classDef break fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,stroke-dasharray: 5 5,color:#000;
+
+    
+
+    class W1,W2,W3,W4,WB1,WB2,WB3,WB4,WB5,WB6,WB7,WL1,WL2,WL3,WL4,WA1,WA2,WA3,WA4,WA5,WA6,WA7 worker;
+
+    class M1,M2,M3,M4,MB1,MB2,MB3,MB4,MB5,MB6,MB7,ML1,ML2,ML3,ML4,ML5,ML6,MA1,MA2,MA3,MA4,MA5,MA6 manager;
+
+    class S1,S2,S3,SB1,SB2,SB3,SB4,SL1,SL2,SL3,SA1,SA2 safety;
+
+    class P1,P2 planner;
+
     class B1,B2,B3,L1,L2,L3,H1,H2,H3,H4,H5 break;
