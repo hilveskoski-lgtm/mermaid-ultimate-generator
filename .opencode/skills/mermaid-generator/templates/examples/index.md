@@ -2,25 +2,6 @@
 
 Kuratoidut, testatut ja dokumentoidut esimerkit per diagrammityyppi.
 
-## 📊 Example Inventory (Dataview)
-
-```dataviewjs
-const pages = dv.pages('"03-esimerkit"');
-const examples = pages.where(p => p.file.content && p.file.content.includes("```mermaid"));
-const byType = {}, byStatus = { "✅": 0, "🔄": 0, "❌": 0 };
-for (const page of examples) {
-    const content = page.file.content;
-    const match = content.match(/```mermaid\s*(\w+)/);
-    const type = match ? match[1] : "unknown";
-    byType[type] = (byType[type] || 0) + 1;
-    if (content.includes("✅")) byStatus["✅"]++;
-    else if (content.includes("🔄")) byStatus["🔄"]++;
-    else if (content.includes("❌")) byStatus["❌"]++;
-}
-dv.table(["Type", "Count"], Object.entries(byType).sort((a,b) => b[1]-a[1]));
-dv.table(["Status", "Count"], Object.entries(byStatus));
-```
-
 ## Per diagrammityyppi
 
 | Tyyppi | Tiedosto | Kuvaus | Valmis |

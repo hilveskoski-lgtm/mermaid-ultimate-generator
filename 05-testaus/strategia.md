@@ -1,5 +1,34 @@
 # Testausstrategia
 
+## 📊 Test Coverage Dashboard (Dataview)
+
+```dataviewjs
+const pages = dv.pages('"05-testaus"');
+const fixtures = dv.pages('"05-testaus/fixtures"');
+const valid = fixtures.where(p => p.file.path.includes("/valid/")).length;
+const invalid = fixtures.where(p => p.file.path.includes("/invalid/")).length;
+const total = valid + invalid;
+
+const testFiles = pages.where(p => p.file.ext === "ts" || p.file.ext === "js");
+const testCount = testFiles.length;
+
+dv.table(["Metric", "Value"], [
+    ["Valid Fixtures", valid],
+    ["Invalid Fixtures", invalid],
+    ["Total Fixtures", total],
+    ["Test Files (ts/js)", testCount],
+    ["Test Levels", 3],
+]);
+
+// Fixture breakdown
+const byType = {};
+for (const f of fixtures) {
+    const type = f.file.path.split("/").slice(-2, -1)[0];
+    byType[type] = (byType[type] || 0) + 1;
+}
+dv.table(["Fixture Type", "Count"], Object.entries(byType));
+```
+
 ## Testitasot
 
 ### 1. Yksikkötestit (Unit)

@@ -1,5 +1,20 @@
 # Generaattori-arkkitehtuuri
 
+## 📊 Architecture Components (Dataview)
+
+```dataviewjs
+const pages = dv.pages('"04-generaattori"');
+const components = [
+    { layer: "Input", items: ["Natural Language", "Code (AST)", "Structured Data (JSON)"] },
+    { layer: "Core", items: ["Intent Parser", "Template Engine", "Validator Pipeline", "Optimizer"] },
+    { layer: "Output", items: ["Mermaid Source", "SVG/PNG Export", "Interactive HTML"] }
+];
+for (const c of components) {
+    dv.header(3, c.layer);
+    dv.list(c.items);
+}
+```
+
 ## Yleiskatsavo
 
 ```

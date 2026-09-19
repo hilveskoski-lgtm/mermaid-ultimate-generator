@@ -1,0 +1,16 @@
+ 35:         direction TB
+ 36: 
+ 37:         subgraph Worker_B["👷 Työntekijä"]
+ 38:             WB1[Aloita tehtävä\n(Mobile: Start Task)] --> WB2[Suorita työtä\nToteuta laadunvalvonta]
+ 39:             WB2 --> WB3{Kaikki\nmateriaalit\nkäsissä?}
+ 40:             WB3 -->|Ei| WB4[Ilmoita puute\n(Mobile: Block Task)]
+ 41:             WB3 -->|Kyllä| WB5[Jatka työtä\nDokumentoi edistyminen]
+ 42:             WB4 --> WB6[Työmaapäällikkö\nratkaisee]
+ 43:             WB6 --> WB5
+ 44:             WB5 --> WB7[Päivitä edistyminen\n(Mobile: Progress 25%)]
+ 45:         end
+ 46: 
+ 47:         subgraph Manager_B["👨‍💼 Työmaapäällikkö"]
+ 48:             MB1[Käy työpaikkoja\nValvo edistymistä] --> MB2{Ratkaise\nesteet}
+ 49:             MB2 -->|Materiaali| MB3[Ota yhteys\ntoimittajaan/ERP]
+ 50:             MB2 -->|Resurssi| MB4[Siirrä henkilöstä\ntai palkkaa apu]

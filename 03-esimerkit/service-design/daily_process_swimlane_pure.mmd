@@ -1,0 +1,163 @@
+flowchart TD
+    %% NODE DEFINITIONS
+    %% Morning
+    W1[Saapu tyomaalle / Tarkista viestit]
+    W2[Hae PPE-lokerosta]
+    W3[Mene tehtavan paikkaan]
+    W4[Tarkista materiaalit ja tyokalut]
+    M1[Saapu tyomaalle / Kay lapi paivan suunnitelma]
+    M2[Aamukokous (15 min)]
+    M3[Tarkista aamun materiaalitoimitukset]
+    M4[Vahvista tehtavajaot ja prioriteetit]
+    S1[TYA/TYH-tarkistus tehtavakohtaiset riskit]
+    S2[Turvallisuusympyra]
+    S3[Paivita riskikortit jos tarpeen]
+    P1[Tarkista avoimet materiaalipyyntoset]
+    P2[Vahvista acil-tilaukset]
+    
+    %% Before Break
+    WB1[Aloita tehtava (Mobile: Start Task)]
+    WB2[Suorita tyota / Toteuta laadunvalvonta]
+    WB3_dec{Kaikki materiaalit kassissa?}
+    WB4[Ilmoita puute (Mobile: Block Task)]
+    WB5[Jatka tyota / Dokumentoi eteneminen]
+    WB6[Tyomaapallikko ratkaisee]
+    WB7[Paivita eteneminen 25%]
+    MB1[Kay tyopaikkoja / Valvo edistymista]
+    MB2_dec{Ratkaise esteet}
+    MB3[Ota yhteys toimittajaan/ERP]
+    MB4[Siirra henkilosta tai palkkaa apu]
+    MB5[Kysy suunnittelijalta / asiantuntijalta]
+    MB6[Paivita suunnitelma ERP:a]
+    MB7[Viesti muutos ryhmalle (Mobile)]
+    SB1[Valvo PPE:n kayttoa ja turva-asetuksia]
+    SB2_dec{Merkitse poikkeama?}
+    SB3[Luo turvallisuus-havainto (Mobile)]
+    SB4[Jatka valvontaa]
+    
+    %% Break
+    B1[Tyontekijat: Lepo, ruokailu]
+    B2[Tyomaapallikko: Pika-arvio edistymisesta vs. suunnitelma]
+    B3[Turvallisuus: Paivita riskikortit jos muutos]
+    
+    %% Before Lunch
+    WL1[Jatka tehtavaa / Tai aloita uusi]
+    WL2[Keskustelu vuorokaverin kanssa: siirtymatiedot]
+    WL3[Paivita eteneminen 50-75%]
+    WL4[Laadun tarkistus itsetarkastus]
+    ML1[Keskustelu toimittajien kanssa (paivan toimitukset)]
+    ML2[Tarkista aamun tehtavien tila]
+    ML3_dec{Paatos: Jatketaanko / muuuttaako?}
+    ML4[Varmista afternoon resurssit]
+    ML5[Paivita suunnitelma ERP:aan]
+    ML6[Viesti tiimille]
+    SL1[Kierros tyomaalla / Tarkista scaffolding, suojausverkot]
+    SL2_dec{Merkitse poikkeama?}
+    SL3[Havainto -> ERP -> Toimenpide]
+    
+    %% Lunch
+    L1[Tyontekijat: Ruokailu, levahdys]
+    L2[Tyomaapallikko: Tarkista huomisen toimitukset]
+    L3[Suunnittelija: Paivita materiaaliprognosit]
+    
+    %% Afternoon
+    WA1[Jatka/aloita tehtava]
+    WA2[Tiivista tehtava kohti valmiutta]
+    WA3[Laadun tarkistus (itsetarkastus + hyvaksynta)]
+    WA4_dec{Laatu OK?}
+    WA5[Korjaa / tee uudelleen]
+    WA6[Merkitse valmiiksi (Mobile: Complete Task)]
+    WA7[Siivoa tyopaikka / Palauta tyokalut]
+    MA1[Hyvaksy valmiit tehtavat (Mobile)]
+    MA2[Tarkista CRIT-polut kriittiset tehtavat]
+    MA3_dec{Onko ekritisia?}
+    MA4[Eskaloi / lisaa resursseja]
+    MA5[Paivita huomisen suunnitelma]
+    MA6[Viesti tiimille & asiakkaalle]
+    SA1[Lopullinen kierros / Lukitus/turvaus]
+    SA2[Paivan turvallisuus-raportti (Mobile)]
+    
+    %% Handover
+    H1[Tyontekija: Tehtavan-siirtymailmoitus (Mobile)]
+    H2[Tyomaapallikko: Vuoron-yhteenveto (Mobile)]
+    H3[Suunnittelija: Paivita edistymisdata ERP:aan]
+    H4[Turvallisuus: Arkistoi paivan havainnot]
+    H5[ERP: Automaattinen paivan raportti -> Johto]
+    
+    %% EDGES - Morning
+    W1 --> W2 --> W3 --> W4
+    M1 --> M2 --> M3 --> M4
+    S1 --> S2 --> S3
+    P1 --> P2
+    M2 -.-> W1
+    M4 -.-> W3
+    S2 -.-> W1
+    S2 -.-> M2
+    
+    %% EDGES - Before Break
+    WB1 --> WB2 --> WB3_dec
+    WB3_dec -->|Ei| WB4
+    WB3_dec -->|Kylla| WB5
+    WB4 --> WB6 --> WB5
+    WB5 --> WB7
+    MB1 --> MB2_dec
+    MB2_dec -->|Materiaali| MB3
+    MB2_dec -->|Resurssi| MB4
+    MB2_dec -->|Tekninen| MB5
+    MB3 --> MB6
+    MB4 --> MB6
+    MB5 --> MB6
+    MB6 --> MB7
+    SB1 --> SB2_dec
+    SB2_dec -->|Kylla| SB3
+    SB2_dec -->|Ei| SB4
+    WB4 -.-> MB2_dec
+    WB7 -.-> MB1
+    
+    %% EDGES - Break
+    B1 --> B2 --> B3
+    
+    %% EDGES - Before Lunch
+    WL1 --> WL2 --> WL3 --> WL4
+    ML1 --> ML2 --> ML3_dec
+    ML3_dec -->|Jatka| ML4
+    ML3_dec -->|Muuta| ML5
+    ML4 --> ML6
+    ML5 --> ML6
+    SL1 --> SL2_dec
+    SL2_dec -->|Kylla| SL3
+    WL4 -.-> ML2
+    
+    %% EDGES - Lunch
+    L1 --> L2 --> L3
+    
+    %% EDGES - Afternoon
+    WA1 --> WA2 --> WA3 --> WA4_dec
+    WA4_dec -->|Ei| WA5
+    WA4_dec -->|Kylla| WA6
+    WA5 --> WA3
+    WA6 --> WA7
+    MA1 --> MA2 --> MA3_dec
+    MA3_dec -->|Kylla| MA4
+    MA3_dec -->|Ei| MA5
+    MA4 --> MA6
+    MA5 --> MA6
+    SA1 --> SA2
+    WA6 -.-> MA1
+    WA7 -.-> MA5
+    
+    %% EDGES - Handover
+    H1 --> H2 --> H3 --> H4 --> H5
+    
+    %% CLASSES
+    classDef worker fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#000;
+    classDef manager fill:#fff3e0,stroke:#ef6c00,stroke-width:2px,color:#000;
+    classDef safety fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#000;
+    classDef planner fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#000;
+    classDef break fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,stroke-dasharray: 5 5,color:#000;
+    
+    class W1,W2,W3,W4,WB1,WB2,WB3_dec,WB4,WB5,WB6,WB7,WL1,WL2,WL3,WL4,WA1,WA2,WA3,WA4_dec,WA5,WA6,WA7 worker;
+    class M1,M2,M3,M4,MB1,MB2_dec,MB3,MB4,MB5,MB6,MB7,ML1,ML2,ML3_dec,ML4,ML5,ML6,MA1,MA2,MA3_dec,MA4,MA5,MA6 manager;
+    class S1,S2,S3,SB1,SB2_dec,SB3,SB4,SL1,SL2_dec,SL3,SA1,SA2 safety;
+    class P1,P2 planner;
+    class B1,B2,B3,L1,L2,L3,H1,H2,H3,H4,H5 break;

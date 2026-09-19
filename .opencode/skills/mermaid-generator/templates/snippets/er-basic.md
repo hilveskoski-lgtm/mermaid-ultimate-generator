@@ -1,0 +1,21 @@
+---
+trigger: "er"
+description: "Basic ER Diagram Template"
+---
+```mermaid
+erDiagram
+    CUSTOMER ||--o{ ORDER : places
+    ORDER ||--|{ LINE_ITEM : contains
+    PRODUCT ||--o{ LINE_ITEM : "is in"
+    
+    CUSTOMER {
+        string id PK
+        string name
+        string email
+    }
+    ORDER {
+        int id PK
+        date created
+        string status
+    }
+```

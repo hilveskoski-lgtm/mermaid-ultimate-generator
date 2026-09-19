@@ -19,6 +19,27 @@ Kehittää **ultimaattinen Mermaid-generaattori** joka:
 | `05-testaus` | Testitapausten, validointien, regression-testien hallinta |
 | `99-arkisto` | Vanhentuneet, referenssimateriaalit |
 
+## 📊 Vault Statistics (Dataview)
+
+```dataviewjs
+const pages = dv.pages('""');
+const mmdFiles = pages.where(p => p.file.ext === "mmd" || p.file.content?.includes("```mermaid"));
+const mdFiles = pages.where(p => p.file.ext === "md");
+const totalDiagrams = mmdFiles.length;
+const byType = {};
+for (const page of mmdFiles) {
+    const match = page.file.content?.match(/```mermaid\s*(\w+)/);
+    const type = match ? match[1] : "unknown";
+    byType[type] = (byType[type] || 0) + 1;
+}
+dv.table(["Metric", "Value"], [
+    ["Total .md files", mdFiles.length],
+    ["Total Mermaid diagrams", totalDiagrams],
+    ["Diagram Types", Object.keys(byType).length],
+]);
+dv.table(["Type", "Count"], Object.entries(byType).sort((a,b) => b[1]-a[1]));
+```
+
 ## 🚀 Roadmap
 
 ### Phase 1: Tietokanta (viikko 1-2)

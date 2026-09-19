@@ -2,6 +2,22 @@
 
 Mermaid tukee **14+ diagrammityyppiä**. Jokaisella on oma syntaksinsa ja käyttötapauksensa.
 
+## 📊 Diagram Inventory (Dataview)
+
+```dataviewjs
+const pages = dv.pages('"01-diagrammit"');
+const withMermaid = pages.where(p => p.file.content && p.file.content.includes("```mermaid"));
+const byType = {};
+for (const page of withMermaid) {
+    const match = page.file.content.match(/```mermaid\s*(\w+)/);
+    const type = match ? match[1] : "unknown";
+    byType[type] = (byType[type] || 0) + 1;
+}
+dv.table(["Type", "Count", "Files"], 
+    Object.entries(byType).sort((a,b) => b[1]-a[1])
+    .map(([type, count]) => [type, count, dv.pages(`"01-diagrammit"`).where(p => p.file.content?.includes(type)).map(p => p.file.link).join(", ")]));
+```
+
 ## Luokittelu
 
 ### Rakenteelliset (Structural)

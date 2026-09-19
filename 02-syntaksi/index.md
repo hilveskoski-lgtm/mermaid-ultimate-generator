@@ -1,5 +1,21 @@
 # Mermaid Syntaksi & Grammariikka
 
+## 📊 Syntax Elements Inventory (Dataview)
+
+```dataviewjs
+const pages = dv.pages('"02-syntaksi"');
+const withMermaid = pages.where(p => p.file.content && p.file.content.includes("```mermaid"));
+const elements = { nodes: 0, edges: 0, styles: 0, configs: 0 };
+for (const page of withMermaid) {
+    const content = page.file.content;
+    elements.nodes += (content.match(/\[.*?\]/g) || []).length;
+    elements.edges += (content.match(/-->/g) || []).length;
+    elements.styles += (content.match(/classDef/g) || []).length;
+    elements.configs += (content.match(/%%\{init/g) || []).length;
+}
+dv.table(["Element", "Count"], Object.entries(elements));
+```
+
 ## Yleinen rakenne
 
 ```mermaid
